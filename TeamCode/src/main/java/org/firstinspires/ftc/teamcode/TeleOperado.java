@@ -13,7 +13,7 @@ public class TeleOperado extends OpMode {
     // Motores de movimentação
     DcMotor leftF, leftB, rightF, rightB;
 
-    DcMotorEx left, right;
+    DcMotorEx leftArm, rightArm;
 
     DcMotorEx gobildaMotor; // Declaração do motor
     boolean holdingPosition = false; // Variável que indica se o motor está segurando a posição
@@ -60,12 +60,15 @@ public class TeleOperado extends OpMode {
         } else {
             telemetry.addLine("Modo Manual - Atuador");
             move_Slide();
-            novo_Servo();
+            move_Base();
+            //novo_Servo();
         }
 
         telemetry.update();
 
     }
+    /*
+
     public void novo_Servo(){
         boolean leftTriggerPressed = gamepad2.left_trigger > 0.5;
         boolean rightTriggerPressed = gamepad2.right_trigger > 0.5;
@@ -97,6 +100,8 @@ public class TeleOperado extends OpMode {
 
         }
     }
+
+     */
     public void init_Hardware(){
 
         leftF = hardwareMap.get(DcMotor.class, "leftf");
@@ -107,14 +112,21 @@ public class TeleOperado extends OpMode {
         leftF.setDirection(DcMotorSimple.Direction.REVERSE);
         leftB.setDirection(DcMotorSimple.Direction.REVERSE);
 
-
+        /*
         servo = hardwareMap.get(Servo.class, "servo");
         servo2 = hardwareMap.get(Servo.class, "servo2");
         servo3 = hardwareMap.get(Servo.class, "servo3");
 
         servo.setDirection(Servo.Direction.REVERSE);
 
-        gobildaMotor = hardwareMap.get(DcMotorEx.class, "slide"); // Mapeia o motor do hardware
+         */
+
+        leftArm = hardwareMap.get(DcMotorEx.class, "left");
+        rightArm = hardwareMap.get(DcMotorEx.class, "right");
+
+        rightArm.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        gobildaMotor = hardwareMap.get(DcMotorEx.class, "gobilda"); // Mapeia o motor do hardware
         gobildaMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); // Define o comportamento de freio ao parar
         gobildaMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // Reseta os encoders
         gobildaMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // Configura o motor para usar encoders
@@ -149,5 +161,17 @@ public class TeleOperado extends OpMode {
         telemetry.addData("Joystick:", joystickInput);
         telemetry.addData("Posição Atual:", currentPosition);
         telemetry.update();
+    }
+
+    public void move_Base(){
+        if (gamepad2.right_stick_y > 0.1){
+            rightArm.setPower(0.5);
+            leftArm.setPower(0.5);
+        } else if (gamepad2.right_stick_y < 0) {
+            rightArm.setPower(-0.5);
+            leftArm.setPower(-0.5);
+        }else{
+
+        }
     }
 }

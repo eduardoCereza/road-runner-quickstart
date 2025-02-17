@@ -65,9 +65,9 @@ public final class TankDrive {
         // TODO: fill in these values based on
         //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.UP;
+                RevHubOrientationOnRobot.LogoFacingDirection.DOWN;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+                RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
 
         // drive model parameters
         public double inPerTick = 0;
@@ -153,6 +153,7 @@ public final class TankDrive {
 
             // TODO: reverse encoder directions if needed
             //   leftEncs.get(0).setDirection(DcMotorSimple.Direction.REVERSE);
+            leftEncs.get(0).setDirection(DcMotorSimple.Direction.REVERSE);
 
             this.pose = pose;
         }

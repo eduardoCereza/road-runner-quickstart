@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -9,13 +8,11 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Periodo TeleOperado")
-public class TeleOp_Mode extends OpMode {
+public class TeleOperado extends OpMode {
 
     // Motores de movimentação
     DcMotor leftF, leftB, rightF, rightB;
 
-
-    
     DcMotorEx gobildaMotor; // Declaração do motor
     boolean holdingPosition = false; // Variável que indica se o motor está segurando a posição
     final int MAX_POSITION = -4300; // Posição máxima permitida para o motor
@@ -28,7 +25,6 @@ public class TeleOp_Mode extends OpMode {
     double sin, theta, cos, power, max;
     double leftFPower, leftBPower, rightFPower, rightBPower;
 
-
     boolean modoAutoArm = false; // Começa no modo manual
     boolean lastPressR1 = false;
     boolean lastPressL1 = false;
@@ -36,7 +32,7 @@ public class TeleOp_Mode extends OpMode {
 
     @Override
     public void init() {
-       init_Hardware();
+        init_Hardware();
     }
 
     @Override
@@ -59,7 +55,6 @@ public class TeleOp_Mode extends OpMode {
 
         if (modoAutoArm) {
             telemetry.addLine("Modo Auto - Atuador");
-            slide_Auto();
         } else {
             telemetry.addLine("Modo Manual - Atuador");
             move_Slide();
@@ -102,6 +97,15 @@ public class TeleOp_Mode extends OpMode {
     }
     public void init_Hardware(){
 
+        leftF = hardwareMap.get(DcMotor.class, "leftf");
+        leftB = hardwareMap.get(DcMotor.class, "leftb");
+        rightF = hardwareMap.get(DcMotor.class, "rightf");
+        rightB = hardwareMap.get(DcMotor.class, "rightb");
+
+        leftF.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftB.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
         servo = hardwareMap.get(Servo.class, "servo");
         servo2 = hardwareMap.get(Servo.class, "servo2");
         servo3 = hardwareMap.get(Servo.class, "servo3");
@@ -143,8 +147,5 @@ public class TeleOp_Mode extends OpMode {
         telemetry.addData("Joystick:", joystickInput);
         telemetry.addData("Posição Atual:", currentPosition);
         telemetry.update();
-    }
-    public void slide_Auto(){
-        PIDFController pidfController = new PIDFController(1, 0, 0, 1.0);
     }
 }

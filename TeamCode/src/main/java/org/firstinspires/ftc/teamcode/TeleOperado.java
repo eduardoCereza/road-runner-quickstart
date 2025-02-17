@@ -13,6 +13,8 @@ public class TeleOperado extends OpMode {
     // Motores de movimentação
     DcMotor leftF, leftB, rightF, rightB;
 
+    DcMotorEx left, right;
+
     DcMotorEx gobildaMotor; // Declaração do motor
     boolean holdingPosition = false; // Variável que indica se o motor está segurando a posição
     final int MAX_POSITION = -4300; // Posição máxima permitida para o motor

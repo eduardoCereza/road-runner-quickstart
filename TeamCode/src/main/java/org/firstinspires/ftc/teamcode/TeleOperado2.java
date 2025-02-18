@@ -1,47 +1,33 @@
-package org.firstinspires.ftc.teamcode.nacional;
+package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "Periodo TeleOperado")
-public class teleop extends OpMode {
-
-    // Motores de movimentação
+@TeleOp
+public class TeleOperado2 extends OpMode {
     DcMotor leftF, leftB, rightF, rightB;
-
-    DcMotorEx leftArm, rightArm;
-
-    DcMotorEx gobildaMotor; // Declaração do motor
+    DcMotorEx leftArm, rightArm, gobildaMotor;
     boolean holdingPosition = false; // Variável que indica se o motor está segurando a posição
     final int MAX_POSITION = -4300; // Posição máxima permitida para o motor
-
     double x, y, turn;
-
     Servo servo, servo2, servo3;
-
-    // Controle de movimentação
     double sin, theta, cos, power, max;
     double leftFPower, leftBPower, rightFPower, rightBPower;
-
     boolean modoAutoArm = false; // Começa no modo manual
     boolean lastPressR1 = false;
     boolean lastPressL1 = false;
 
-
     @Override
     public void init() {
-        init_Hardware();
+        initHardware();
     }
 
     @Override
     public void loop() {
-
-        // Variáveis para alternância de modo
-
         boolean pressR1 = gamepad2.dpad_up;
         boolean pressL1 = gamepad2.dpad_down;
 
@@ -65,7 +51,6 @@ public class teleop extends OpMode {
         }
 
         telemetry.update();
-
     }
     /*
 
@@ -101,8 +86,10 @@ public class teleop extends OpMode {
         }
     }
 
+
      */
-    public void init_Hardware(){
+
+    public void initHardware(){
 
         leftF = hardwareMap.get(DcMotor.class, "leftf");
         leftB = hardwareMap.get(DcMotor.class, "leftb");
@@ -124,15 +111,11 @@ public class teleop extends OpMode {
         leftArm = hardwareMap.get(DcMotorEx.class, "left");
         rightArm = hardwareMap.get(DcMotorEx.class, "right");
 
-        rightArm.setDirection(DcMotorSimple.Direction.REVERSE);
 
         gobildaMotor = hardwareMap.get(DcMotorEx.class, "gobilda"); // Mapeia o motor do hardware
         gobildaMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); // Define o comportamento de freio ao parar
         gobildaMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // Reseta os encoders
         gobildaMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // Configura o motor para usar encoders
-
-
-        telemetry.addLine("Sistema inicializado. Pronto para rodar!");
     }
     public void move_Slide(){
         int currentPosition = gobildaMotor.getCurrentPosition(); // Obtém a posição atual do motor
@@ -164,14 +147,17 @@ public class teleop extends OpMode {
     }
 
     public void move_Base(){
-        if (gamepad2.right_stick_y > 0.1){
-            rightArm.setPower(0.5);
-            leftArm.setPower(0.5);
-        } else if (gamepad2.right_stick_y < 0) {
-            rightArm.setPower(-0.5);
-            leftArm.setPower(-0.5);
-        }else{
 
+        double input = gamepad2.right_stick_y;
+        if (input > 0.1){
+            rightArm.setPower(input);
+            leftArm.setPower(input);
+        } else if (input < 0) {
+            rightArm.setPower(input);
+            leftArm.setPower(input);
+        }else{
+            rightArm.setPower(0);
+            leftArm.setPower(0);
         }
     }
 }

@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.nacional;
 
 public class PIDFController {
-    private double Kp, Ki, Kd, Kf;
+    public static double Kp, Ki, Kd, Kf;
     private double setPoint = 0, minInput = 0, maxInput = 0, minOutput = 0, maxOutput = 0;
     private double integralSum = 0, lastError = 0;
     private double theresholdPercent = 0;

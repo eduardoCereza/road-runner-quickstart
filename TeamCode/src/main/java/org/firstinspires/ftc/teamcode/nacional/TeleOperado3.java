@@ -156,14 +156,31 @@ public class TeleOperado3 extends OpMode {
     }
 
     public void move_Base(){
-        if (gamepad2.right_stick_y > 0.1){
-            rightArm.setPower(0.5);
-            leftArm.setPower(0.5);
-        } else if (gamepad2.right_stick_y < 0) {
-            rightArm.setPower(-0.5);
-            leftArm.setPower(-0.5);
-        }else{
+        int currentPositionL = leftArm.getCurrentPosition();
+        double joystickInput = gamepad2.right_stick_y;
 
+        if (joystickInput > 0 && currentPositionL < 0) {
+            leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftArm.setPower(joystickInput);
+            rightArm.setPower(joystickInput);
+            holdingPositionBase = false;
         }
+        else if (joystickInput < 0 && currentPositionL > MAX_POSITION_ARM) {
+            leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftArm.setPower(joystickInput);
+            rightArm.setPower(joystickInput);
+            holdingPositionBase = false;
+        }
+        else if (!holdingPositionBase) {
+            leftArm.setTargetPosition(currentPositionL);
+            leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            leftArm.setPower(0.1);
+            rightArm.setPower(0.1);
+            holdingPositionBase = true;
+        }
+
+        telemetry.addData("Joystick:", joystickInput);
+        telemetry.addData("Posição Atual Base:", currentPositionL);
+        telemetry.update();
     }
 }

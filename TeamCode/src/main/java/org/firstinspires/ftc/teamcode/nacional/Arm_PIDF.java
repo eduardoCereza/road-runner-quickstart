@@ -6,17 +6,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 @Autonomous
 public class Arm_PIDF extends LinearOpMode {
-
     DcMotor motorArm, motorArm2;
-
     @Override
     public void runOpMode() throws InterruptedException{
 
-        int encoderDegreesToAttain = 1500;
-        double minPower = 0.01;
-        double maxPower = 0.5;
+        int encoderDegreesToAttain = -500;
+        double minPower = 0.5;
+        double maxPower = 1;
         PIDFController pidfController = new PIDFController(0.1, 0, 0, 2);
-        pidfController.setInputRange(50, 4000);
+        pidfController.setInputRange(50, 900);
         pidfController.setSetPoint(encoderDegreesToAttain);
         pidfController.setOutputRange(minPower, maxPower);
 
@@ -53,5 +51,6 @@ public class Arm_PIDF extends LinearOpMode {
             }
         }
         motorArm.setPower(0);
+        motorArm2.setPower(0);
     }
 }

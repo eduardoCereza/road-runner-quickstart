@@ -11,13 +11,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class TeleOperado2 extends OpMode {
     DcMotor leftF, leftB, rightF, rightB;
     DcMotorEx leftArm, rightArm, gobildaMotor;
-    boolean holdingPosition = false; // Variável que indica se o motor está segurando a posição
-    final int MAX_POSITION = -4300; // Posição máxima permitida para o motor
+    boolean holdingPosition = false;
+    final int MAX_POSITION = -4300;
     double x, y, turn;
     Servo servo, servo2, servo3;
     double sin, theta, cos, power, max;
     double leftFPower, leftBPower, rightFPower, rightBPower;
-    boolean modoAutoArm = false; // Começa no modo manual
+    boolean modoAutoArm = false;
     boolean lastPressR1 = false;
     boolean lastPressL1 = false;
 
@@ -49,6 +49,8 @@ public class TeleOperado2 extends OpMode {
             move_Base();
             //novo_Servo();
         }
+
+        move_Chassi();
 
         telemetry.update();
     }
@@ -91,6 +93,7 @@ public class TeleOperado2 extends OpMode {
 
     public void initHardware(){
 
+        // Configuração dos motores de movimentação
         leftF = hardwareMap.get(DcMotor.class, "leftf");
         leftB = hardwareMap.get(DcMotor.class, "leftb");
         rightF = hardwareMap.get(DcMotor.class, "rightf");
@@ -98,6 +101,11 @@ public class TeleOperado2 extends OpMode {
 
         leftF.setDirection(DcMotorSimple.Direction.REVERSE);
         leftB.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         /*
         servo = hardwareMap.get(Servo.class, "servo");
@@ -145,9 +153,8 @@ public class TeleOperado2 extends OpMode {
         telemetry.addData("Posição Atual:", currentPosition);
         telemetry.update();
     }
-
     public void move_Base(){
-
+        /*
         double input = gamepad2.right_stick_y;
         if (input > 0.1){
             rightArm.setPower(input);
@@ -159,5 +166,36 @@ public class TeleOperado2 extends OpMode {
             rightArm.setPower(0);
             leftArm.setPower(0);
         }
+
+ */}
+    public void move_Chassi(){
+        y = -gamepad1.left_stick_y;
+        x = gamepad1.left_stick_x;
+        turn = gamepad1.right_stick_x;
+
+
+        theta = Math.atan2(y, x);
+        power = Math.hypot(x, y);
+
+        sin = Math.sin(theta - Math.PI / 4);
+        cos = Math.cos(theta - Math.PI / 4);
+        max = Math.max(Math.abs(sin), Math.abs(cos));
+
+        leftFPower = power * cos / max + turn;
+        rightFPower = power * sin / max - turn;
+        leftBPower = power * sin / max + turn;
+        rightBPower = power * cos / max - turn;
+
+        if ((power + Math.abs(turn)) > 1) {
+            leftFPower /= power + turn;
+            leftBPower /= power + turn;
+            rightFPower /= power + turn;
+            rightBPower /= power + turn;
+        }
+
+        leftF.setPower(leftFPower);
+        rightB.setPower(rightBPower);
+        rightF.setPower(rightFPower);
+        leftB.setPower(leftBPower);
     }
 }

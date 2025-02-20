@@ -97,6 +97,7 @@ public class Autonomous_Mode extends LinearOpMode {
 
     }
 
+
     //TODO: VERIFICAR COMO FUNCIONAM OS SERVOS PARA ACERTAR OS MOVIMENTOS
     public class servos {
         private Servo garra, servoX, servoY;

@@ -21,7 +21,6 @@ public class Mover_Arm extends OpMode {
     boolean holdingPosition = false;
     final int MAX_POSITION = -4300;
 
-
     int encoderDegreesToAttain;
     private PIDFController controller;
 
@@ -61,6 +60,8 @@ public class Mover_Arm extends OpMode {
 
         move_Slide();
 
+        telemetry.addData("Posição Left", leftArm.getCurrentPosition());
+        telemetry.update();
     }
     public void initHardware(){
 

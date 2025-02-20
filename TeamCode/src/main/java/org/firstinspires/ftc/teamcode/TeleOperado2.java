@@ -154,20 +154,8 @@ public class TeleOperado2 extends OpMode {
         telemetry.update();
     }
     public void move_Base(){
-        /*
-        double input = gamepad2.right_stick_y;
-        if (input > 0.1){
-            rightArm.setPower(input);
-            leftArm.setPower(input);
-        } else if (input < 0) {
-            rightArm.setPower(input);
-            leftArm.setPower(input);
-        }else{
-            rightArm.setPower(0);
-            leftArm.setPower(0);
-        }
 
- */}
+    }
     public void move_Chassi(){
         y = -gamepad1.left_stick_y;
         x = gamepad1.left_stick_x;

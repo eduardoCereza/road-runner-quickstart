@@ -23,6 +23,8 @@ public class TeleOp_Mode extends OpMode{
     int MAX_POSITION = -4200;
     DcMotorEx slide;
 
+    int encoderDegreesToAttain;
+
     //Parte 2: Base
     DcMotorEx leftArm, rightArm;
 
@@ -70,6 +72,7 @@ public class TeleOp_Mode extends OpMode{
             telemetry.addLine("Modo Manual - Atuador");
             move_Slide();
             move_Base();
+
         }
 
         if (modoAutoChassi){
@@ -77,6 +80,8 @@ public class TeleOp_Mode extends OpMode{
         } else {
             move_Chassi();
         }
+
+        telemetry.update();
 
 
     }
@@ -105,29 +110,35 @@ public class TeleOp_Mode extends OpMode{
         }
     }
     public void move_Base(){
-        double minPower = 0.2;
+        double minPower = 0;
         double maxPower = 0.3;
         controller = new PIDFController(1, 0, 0, 4);
+        controller.setInputRange(-4000, 4000);
+        controller.setSetPoint(encoderDegreesToAttain);
         controller.setOutputRange(minPower, maxPower);
 
-        double gamepadInput = gamepad2.right_stick_y;
+        double input = -gamepad2.right_stick_y;
 
-        double powerM = minPower + controller.getComputedOutput(leftArm.getCurrentPosition());
+        double powerM = maxPower + controller.getComputedOutput(leftArm.getCurrentPosition());
         double powerS = minPower - controller.getComputedOutput(leftArm.getCurrentPosition());
 
-        double powerM1 = minPower + controller.getComputedOutput(rightArm.getCurrentPosition());
+
+        double powerM1 = maxPower + controller.getComputedOutput(rightArm.getCurrentPosition());
         double powerS1 = minPower - controller.getComputedOutput(rightArm.getCurrentPosition());
 
-        if (gamepadInput < 0){
+
+        if (input > 0){
             leftArm.setPower(powerM);
             rightArm.setPower(powerM1);
-        } else if((gamepadInput > 0)) {
+        } else if(input < 0) {
             leftArm.setPower(powerS);
             rightArm.setPower(powerS1);
         }else {
             leftArm.setPower(0);
             rightArm.setPower(0);
         }
+
+
     }
     public void move_Chassi(){
         y = -gamepad1.left_stick_y;
@@ -161,8 +172,18 @@ public class TeleOp_Mode extends OpMode{
 
     }
     public void initHard(){
+
         leftArm = hardwareMap.get(DcMotorEx.class, "left");
         rightArm = hardwareMap.get(DcMotorEx.class, "right");
+
+        leftArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        rightArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        rightArm.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftArm.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

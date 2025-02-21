@@ -254,9 +254,13 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
                 .waitSeconds(2)
                 .strafeTo(new Vector2d(46, 30))
                 .waitSeconds(3);
+        Action trajectory0 = drive.actionBuilder(new Pose2d(-0.66, -66.56, Math.toRadians(90.00)))
+                .splineTo(new Vector2d(-0.47, -39.33), Math.toRadians(89.60))
+                .build();
         Action trajectoryActionCloseOut = tab1.endTrajectory().fresh()
                 .strafeTo(new Vector2d(48, 12))
                 .build();
+        
 
 
         //ações que acontecem ao inicializar

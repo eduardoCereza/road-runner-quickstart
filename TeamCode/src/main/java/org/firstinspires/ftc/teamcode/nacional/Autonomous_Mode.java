@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
 @Autonomous(name = "Teste RR", group = "Autonomous")
-public class Autonomous_Mode extends LinearOpMode {
+    public class Autonomous_Mode extends LinearOpMode {
 
     //Initilização e criação de movimentos dos componentes do atuador
     public class leftandright {
@@ -42,8 +42,8 @@ public class Autonomous_Mode extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    left.setPower(0.8);
-                    right.setPower(0.8);
+                    left.setPower(1.0);
+                    right.setPower(1.0);
                     initialized = true;
                 }
                 double pos = left.getCurrentPosition();
@@ -73,8 +73,8 @@ public class Autonomous_Mode extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    left.setPower(-0.8);
-                    right.setPower(-0.8);
+                    left.setPower(-0.7);
+                    right.setPower(-0.7);
                     initialized = true;
                 }
                 double pos = left.getCurrentPosition();
@@ -206,6 +206,8 @@ public class Autonomous_Mode extends LinearOpMode {
         }
     }
 
+
+
     @Override
     public void runOpMode(){
         //inicializa o chassi em uma posição especifica
@@ -255,6 +257,7 @@ public class Autonomous_Mode extends LinearOpMode {
         Action trajectoryActionCloseOut = tab1.endTrajectory().fresh()
                 .strafeTo(new Vector2d(48, 12))
                 .build();
+
 
         //ações que acontecem ao inicializar
         Actions.runBlocking(servos.GarraOpen());

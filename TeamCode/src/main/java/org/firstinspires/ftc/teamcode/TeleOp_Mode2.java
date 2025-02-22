@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.nacional.PIDFController;
 
-@TeleOp(name = "TeleOp Nacional", group = "Nacional")
-public class TeleOp_Mode extends OpMode{
+@TeleOp
+public class TeleOp_Mode2 extends OpMode{
 
     int encoderPoint;
 
@@ -26,8 +26,7 @@ public class TeleOp_Mode extends OpMode{
     //Parte 1: Slide
     boolean holdingPosition = false; ///Definir
     boolean holdingPosition2 = false;
-    boolean holdingPosition3 = false;
-    int MAX_POSITION = -3160, MAXLIMITL = 630, MAXLIMITR = 630; ///Posição máxima do SLIDE
+    int MAX_POSITION = -3160,MAX_POSITION2 = -190, MAX_POSITION3 = -238; ///Posição máxima do SLIDE
     DcMotorEx slide; ///Definir variável do SLIDE
 
     Servo servo, servo2, servo3; ///Definir variáveis do SERVO
@@ -124,11 +123,11 @@ public class TeleOp_Mode extends OpMode{
 
     }
     //Método para mover a base do Atuador
-    public void move_Base(){
+    public void move_Base() {
         int currentPosition2 = leftArm.getCurrentPosition();
         int currentPosition3 = rightArm.getCurrentPosition();
-        double minPower = 0.1;
-        double maxPower = 0.2;
+        double minPower = 0.05;
+        double maxPower = 0.3;
         controller = new PIDFController(4, 0, 0, 4);
         controller.setInputRange(-4000, 4000);
         controller.setSetPoint(encoderPoint);
@@ -142,69 +141,46 @@ public class TeleOp_Mode extends OpMode{
         double powerS = maxPower - controller.getComputedOutput(leftArm.getCurrentPosition());
         double powerS1 = maxPower - controller.getComputedOutput(rightArm.getCurrentPosition());
 
-        if(currentPosition2 < MAXLIMITL && currentPosition3 < MAXLIMITR) {
-            if (input > 0) {
-                leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                rightArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        if (input > 0) {
+            leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                leftArm.setPower(powerM);
-                rightArm.setPower(powerM1);
 
-                holdingPosition2 = false;
-            } else if (input < 0) {
-                leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                rightArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftArm.setPower(powerM);
+            rightArm.setPower(powerM1);
 
-                leftArm.setPower(-powerM / 2.2);
-                rightArm.setPower(-powerM1 / 2.2);
+            holdingPosition2 = false;
+        } else if (input < 0) {
+            leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                holdingPosition2 = false;
-            } else if (!holdingPosition2) {
+            leftArm.setPower(-powerM/2);
+            rightArm.setPower(-powerM1/2);
+
+            holdingPosition2 = false;
+        }
+
+        else if (!holdingPosition2) {
                 leftArm.setTargetPosition(currentPosition2);
                 leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                leftArm.setPower(0);
                 leftArm.setPower(powerS);
 
                 rightArm.setTargetPosition(currentPosition3);
                 rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                rightArm.setPower(0);
                 leftArm.setPower(powerS1);
 
                 holdingPosition2 = true;
 
-            }
-        }else {
-            if (input < 0) {
-                leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                rightArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                leftArm.setPower(-powerM / 2);
-                rightArm.setPower(-powerM1 / 2);
-
-                holdingPosition3 = false;
-            } else if (!holdingPosition3) {
-                leftArm.setTargetPosition(currentPosition2);
-                leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                leftArm.setPower(powerS);
-
-                rightArm.setTargetPosition(currentPosition3);
-                rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                leftArm.setPower(powerS1);
-
-                holdingPosition3 = true;
-
-            }
         }
 
         telemetry.addData("Posição LEFT: ", currentPosition2);
         telemetry.addData("Posição RIGHT: ", currentPosition3);
-
     }
     //Método para mover o CHASSI do robô
     public void move_Chassi(){
-        y = gamepad1.left_stick_y;
-        x = -gamepad1.left_stick_x;
-        turn = -gamepad1.right_stick_x;
+        y = -gamepad1.left_stick_y;
+        x = gamepad1.left_stick_x;
+        turn = gamepad1.right_stick_x;
 
 
         theta = Math.atan2(y, x);
@@ -239,10 +215,10 @@ public class TeleOp_Mode extends OpMode{
         rightArm = hardwareMap.get(DcMotorEx.class, "right");
 
         leftArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //leftArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         rightArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //rightArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         rightArm.setDirection(DcMotorSimple.Direction.REVERSE);
         leftArm.setDirection(DcMotorSimple.Direction.REVERSE);

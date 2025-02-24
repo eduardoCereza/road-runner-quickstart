@@ -27,7 +27,7 @@ public class TeleOp_Mode extends OpMode{
     boolean holdingPosition = false; ///Definir
     boolean holdingPosition2 = false;
     boolean holdingPosition3 = false;
-    int MAX_POSITION = -3160, MAXLIMITL = 630, MAXLIMITR = 630; ///Posição máxima do SLIDE
+    int MAX_POSITION = -3160, MAXLIMITL = 700, MAXLIMITR = 700; ///Posição máxima do SLIDE
     DcMotorEx slide; ///Definir variável do SLIDE
 
     Servo servo, servo2, servo3; ///Definir variáveis do SERVO
@@ -85,7 +85,6 @@ public class TeleOp_Mode extends OpMode{
             move_Slide();
             move_Base();
             move_Servo();
-
         }
 
         if (modoAutoChassi){
@@ -127,9 +126,9 @@ public class TeleOp_Mode extends OpMode{
     public void move_Base(){
         int currentPosition2 = leftArm.getCurrentPosition();
         int currentPosition3 = rightArm.getCurrentPosition();
-        double minPower = 0.1;
+        double minPower = 0.2;
         double maxPower = 0.2;
-        controller = new PIDFController(4, 0, 0, 4);
+        controller = new PIDFController(8, 2, 0, 10);
         controller.setInputRange(-4000, 4000);
         controller.setSetPoint(encoderPoint);
         controller.setOutputRange(minPower, maxPower);
@@ -139,8 +138,10 @@ public class TeleOp_Mode extends OpMode{
         double powerM = maxPower + controller.getComputedOutput(leftArm.getCurrentPosition());
         double powerM1 = maxPower + controller.getComputedOutput(rightArm.getCurrentPosition());
 
+
         double powerS = maxPower - controller.getComputedOutput(leftArm.getCurrentPosition());
         double powerS1 = maxPower - controller.getComputedOutput(rightArm.getCurrentPosition());
+
 
         if(currentPosition2 < MAXLIMITL && currentPosition3 < MAXLIMITR) {
             if (input > 0) {
@@ -160,15 +161,16 @@ public class TeleOp_Mode extends OpMode{
 
                 holdingPosition2 = false;
             } else if (!holdingPosition2) {
+
                 leftArm.setTargetPosition(currentPosition2);
                 leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 leftArm.setPower(0);
-                leftArm.setPower(powerS);
+                leftArm.setPower(powerS1*2);
 
                 rightArm.setTargetPosition(currentPosition3);
                 rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 rightArm.setPower(0);
-                leftArm.setPower(powerS1);
+                rightArm.setPower(powerS1*2);
 
                 holdingPosition2 = true;
 
@@ -178,23 +180,27 @@ public class TeleOp_Mode extends OpMode{
                 leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 rightArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                leftArm.setPower(-powerM / 2);
-                rightArm.setPower(-powerM1 / 2);
+                leftArm.setPower(-powerM / 2.2);
+                rightArm.setPower(-powerM1 / 2.2);
 
                 holdingPosition3 = false;
             } else if (!holdingPosition3) {
                 leftArm.setTargetPosition(currentPosition2);
                 leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                leftArm.setPower(powerS);
+                leftArm.setPower(0.1);
+                leftArm.setPower(powerS *2);
 
                 rightArm.setTargetPosition(currentPosition3);
                 rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                leftArm.setPower(powerS1);
+                rightArm.setPower(0.1);
+                rightArm.setPower(powerS1 *2);
 
                 holdingPosition3 = true;
 
             }
         }
+
+
 
         telemetry.addData("Posição LEFT: ", currentPosition2);
         telemetry.addData("Posição RIGHT: ", currentPosition3);
@@ -268,45 +274,33 @@ public class TeleOp_Mode extends OpMode{
         rightF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        /*
+
         servo = hardwareMap.get(Servo.class, "servo");
         servo2 = hardwareMap.get(Servo.class, "servo2");
         servo3 = hardwareMap.get(Servo.class, "servo3");
 
-        servo.setDirection(Servo.Direction.REVERSE);[
+        servo.setDirection(Servo.Direction.REVERSE);
 
-         */
     }
     //Método para mover os Servos
     public void move_Servo(){
-        boolean leftTriggerPressed = gamepad2.left_trigger > 0.5;
-        boolean rightTriggerPressed = gamepad2.right_trigger > 0.5;
 
-        boolean rightPress = gamepad2.right_bumper;
-        boolean leftPress = gamepad2.left_bumper;
-
-        if (rightPress){
-            servo2.setPosition(0.6);
-        } else if (leftPress) {
+        if (gamepad2.right_bumper){
+            servo2.setPosition(0);
+        } else if (gamepad2.left_bumper) {
             servo2.setPosition(1);
-        }else {
-
         }
 
-        if (leftTriggerPressed){
+        if (gamepad2.left_trigger > 0){
             servo3.setPosition(1);
-        } else if (rightTriggerPressed) {
+        } else if (gamepad2.right_trigger > 0) {
             servo3.setPosition(0);
-        }else {
-
         }
 
         if (gamepad2.a) {
             servo.setPosition(0.5);
         } else if (gamepad2.b) {
             servo.setPosition(-0.7);
-        } else {
-
         }
     }
 

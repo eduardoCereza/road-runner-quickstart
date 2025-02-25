@@ -260,7 +260,6 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
         Action trajectoryActionCloseOut = tab1.endTrajectory().fresh()
                 .strafeTo(new Vector2d(48, 12))
                 .build();
-        
 
 
         //ações que acontecem ao inicializar

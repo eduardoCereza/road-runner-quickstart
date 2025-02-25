@@ -30,14 +30,13 @@ public class TeleOp_Mode extends OpMode{
     int MAX_POSITION = -3160, MAXLIMITL = 700, MAXLIMITR = 700; ///Posição máxima do SLIDE
     DcMotorEx slide; ///Definir variável do SLIDE
 
-    Servo servo, servo2, servo3; ///Definir variáveis do SERVO
+    Servo servo, servo3; ///Definir variáveis do SERVO
 
     //Parte 2: Base
     DcMotorEx leftArm, rightArm; ///Definir variáveis do motor da BASE
 
     //TODO: VARIÁVEIS DE MUDANÇA DE MODO
     boolean modoAutoArm = false, lastpress1 = false, lastpress2 = false; ///Variáveis para alternar entre modo automático e manual do ATUADOR
-    boolean modoAutoChassi = false, lastpress3 = false, lastpress4 = false; ///Variáveis para alternar entre modo automático e manual do CHASSI
 
     //TODO: IMPORTANDO CLASSES
     PIDFController controller; ///Importando classe do PIDF
@@ -55,9 +54,6 @@ public class TeleOp_Mode extends OpMode{
         boolean preesArm1 = gamepad2.dpad_up;
         boolean preesArm2 = gamepad2.dpad_down;
 
-        boolean pressChassi1 = gamepad1.dpad_up;
-        boolean pressChassi2 = gamepad1.dpad_down;
-
         ///Condição que permite acessar os modos auto e manual, tanto do CHASSI quanto do ATUADOR
         if (preesArm1 && !lastpress1){
             modoAutoArm = true;
@@ -65,16 +61,8 @@ public class TeleOp_Mode extends OpMode{
             modoAutoArm = false;
         }
 
-        if(pressChassi1 && !lastpress3){
-            modoAutoChassi = true;
-        } else if (pressChassi2 && !lastpress4) {
-            modoAutoChassi = false;
-        }
-
         lastpress1 = preesArm1;
         lastpress2 = preesArm2;
-        lastpress3 = pressChassi1;
-        lastpress4 = pressChassi2;
 
 
         ///Dependendo do modo acionado, o robô vai fazer movimentos do modo auto ou manual
@@ -87,11 +75,9 @@ public class TeleOp_Mode extends OpMode{
             move_Servo();
         }
 
-        if (modoAutoChassi){
-            telemetry.addLine("Modo Auto - Chassi");
-        } else {
-            move_Chassi();
-        }
+
+        move_Chassi();
+
 
         telemetry.update();
     }
@@ -128,7 +114,7 @@ public class TeleOp_Mode extends OpMode{
         int currentPosition3 = rightArm.getCurrentPosition();
         double minPower = 0.2;
         double maxPower = 0.2;
-        controller = new PIDFController(8, 2, 0, 10);
+        controller = new PIDFController(10, 3, 4, 12);
         controller.setInputRange(-4000, 4000);
         controller.setSetPoint(encoderPoint);
         controller.setOutputRange(minPower, maxPower);
@@ -139,8 +125,8 @@ public class TeleOp_Mode extends OpMode{
         double powerM1 = maxPower + controller.getComputedOutput(rightArm.getCurrentPosition());
 
 
-        double powerS = maxPower - controller.getComputedOutput(leftArm.getCurrentPosition());
-        double powerS1 = maxPower - controller.getComputedOutput(rightArm.getCurrentPosition());
+        //double powerS = maxPower - controller.getComputedOutput(leftArm.getCurrentPosition());
+       // double powerS1 = maxPower - controller.getComputedOutput(rightArm.getCurrentPosition());
 
 
         if(currentPosition2 < MAXLIMITL && currentPosition3 < MAXLIMITR) {
@@ -148,16 +134,16 @@ public class TeleOp_Mode extends OpMode{
                 leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 rightArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                leftArm.setPower(powerM);
-                rightArm.setPower(powerM1);
+                leftArm.setPower(powerM/1.5);
+                rightArm.setPower(powerM1/1.5);
 
                 holdingPosition2 = false;
             } else if (input < 0) {
                 leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 rightArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                leftArm.setPower(-powerM / 2.2);
-                rightArm.setPower(-powerM1 / 2.2);
+                leftArm.setPower(-powerM / 3);
+                rightArm.setPower(-powerM1 / 3);
 
                 holdingPosition2 = false;
             } else if (!holdingPosition2) {
@@ -165,12 +151,12 @@ public class TeleOp_Mode extends OpMode{
                 leftArm.setTargetPosition(currentPosition2);
                 leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 leftArm.setPower(0);
-                leftArm.setPower(powerS1*2);
+                leftArm.setPower(powerM*2);
 
                 rightArm.setTargetPosition(currentPosition3);
                 rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 rightArm.setPower(0);
-                rightArm.setPower(powerS1*2);
+                rightArm.setPower(powerM1*2);
 
                 holdingPosition2 = true;
 
@@ -180,20 +166,20 @@ public class TeleOp_Mode extends OpMode{
                 leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 rightArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                leftArm.setPower(-powerM / 2.2);
-                rightArm.setPower(-powerM1 / 2.2);
+                leftArm.setPower(-powerM / 3);
+                rightArm.setPower(-powerM1 / 3);
 
                 holdingPosition3 = false;
             } else if (!holdingPosition3) {
                 leftArm.setTargetPosition(currentPosition2);
                 leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                leftArm.setPower(0.1);
-                leftArm.setPower(powerS *2);
+                leftArm.setPower(0);
+                leftArm.setPower(powerM*2);
 
                 rightArm.setTargetPosition(currentPosition3);
                 rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                rightArm.setPower(0.1);
-                rightArm.setPower(powerS1 *2);
+                rightArm.setPower(0);
+                rightArm.setPower(powerM1*2);
 
                 holdingPosition3 = true;
 
@@ -245,10 +231,10 @@ public class TeleOp_Mode extends OpMode{
         rightArm = hardwareMap.get(DcMotorEx.class, "right");
 
         leftArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         rightArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         rightArm.setDirection(DcMotorSimple.Direction.REVERSE);
         leftArm.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -276,7 +262,6 @@ public class TeleOp_Mode extends OpMode{
 
 
         servo = hardwareMap.get(Servo.class, "servo");
-        servo2 = hardwareMap.get(Servo.class, "servo2");
         servo3 = hardwareMap.get(Servo.class, "servo3");
 
         servo.setDirection(Servo.Direction.REVERSE);
@@ -285,22 +270,12 @@ public class TeleOp_Mode extends OpMode{
     //Método para mover os Servos
     public void move_Servo(){
 
-        if (gamepad2.right_bumper){
-            servo2.setPosition(0);
-        } else if (gamepad2.left_bumper) {
-            servo2.setPosition(1);
-        }
-
-        if (gamepad2.left_trigger > 0){
-            servo3.setPosition(1);
-        } else if (gamepad2.right_trigger > 0) {
-            servo3.setPosition(0);
-        }
-
-        if (gamepad2.a) {
+        if(gamepad2.right_bumper){
+            servo3.setPosition(0.3);
             servo.setPosition(0.5);
-        } else if (gamepad2.b) {
-            servo.setPosition(-0.7);
+        }else {
+            servo3.setPosition(0);
+            servo.setPosition(0);
         }
     }
 

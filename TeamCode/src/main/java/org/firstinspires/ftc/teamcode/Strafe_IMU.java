@@ -3,78 +3,49 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 public class Strafe_IMU {
-    public void move(double distance, DcMotorEx leftF, DcMotorEx leftB, DcMotorEx rightF, DcMotorEx rightB, IMU imu) {
-        double COUNTS_PER_MOTOR_REV = 28;
-        double DRIVE_GEAR_REDUCTION = 20;
-        double WHEEL_CIRCUMFERENCE_CM = 7.5 * Math.PI;
+    public static double COUNTS_PER_MOTOR_REV = 28;
+    public static double DRIVE_GEAR_REDUCTION = 20;
+    public static double WHEEL_CIRCUMFERENCE_CM = 7.5 * Math.PI;
+    public static double COUNTS_PER_WHEEL_REV = COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION;
+    public static double COUNTS_PER_CM = COUNTS_PER_WHEEL_REV / WHEEL_CIRCUMFERENCE_CM;
 
-        double COUNTS_PER_WHEEL_REV = COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION;
-        double COUNTS_PER_CM = COUNTS_PER_WHEEL_REV / WHEEL_CIRCUMFERENCE_CM;
+    public static double CORRECTION_GAIN = 0;
 
-        double kP_IMU = 0.01; // Fator proporcional para correção com o IMU
-        double MAX_POWER = 0.6;
-        double MIN_POWER = 0.2;
+    public void moveStrafe(DcMotorEx leftF, DcMotorEx leftB, DcMotorEx rightF, DcMotorEx rightB, IMU imu, double distanceCM, double speed) {
 
-        leftF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        leftF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        rightF.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        leftB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        rightB.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
-        int targetPosition = (int) (distance * COUNTS_PER_CM);
-
-        // Define as posições alvo para o movimento lateral
-        leftF.setTargetPosition(targetPosition);
-        rightF.setTargetPosition(-targetPosition);
-        leftB.setTargetPosition(-targetPosition);
-        rightB.setTargetPosition(targetPosition);
-
-        leftF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        rightF.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        leftB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        rightB.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-
-        // Obtém o ângulo inicial do IMU
+        int targetTicks = (int) (distanceCM * COUNTS_PER_CM);
+        int startPosition = leftF.getCurrentPosition();
         double initialAngle = getHeading(imu);
 
-        while (leftF.isBusy() && rightF.isBusy() && leftB.isBusy() && rightB.isBusy()) {
-            // Lê o ângulo atual do IMU
+        leftF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        while (Math.abs(leftF.getCurrentPosition() - startPosition) < targetTicks) {
             double currentAngle = getHeading(imu);
-            double angleError = currentAngle - initialAngle;
+            double error = currentAngle - initialAngle; // Diferença entre o ângulo atual e o inicial
+            double correction = error * CORRECTION_GAIN;
 
-            // Calcula correção para manter o robô alinhado
-            double correction = kP_IMU * angleError;
-
-            // Ajusta potência dos motores
-            double leftPower = MAX_POWER - correction;
-            double rightPower = MAX_POWER + correction;
-
-            // Limita a potência dentro dos valores permitidos
-            leftPower = Math.max(MIN_POWER, Math.min(MAX_POWER, leftPower));
-            rightPower = Math.max(MIN_POWER, Math.min(MAX_POWER, rightPower));
-
-            leftF.setPower(leftPower);
-            leftB.setPower(-leftPower);
-            rightF.setPower(rightPower);
-            rightB.setPower(-rightPower);
+            // Ajusta a velocidade dos motores para corrigir a direção
+            leftF.setVelocity(speed - correction);
+            leftB.setVelocity(-(speed - correction));
+            rightF.setVelocity(-(speed + correction));
+            rightB.setVelocity(speed + correction);
         }
 
-        leftF.setPower(0);
-        leftB.setPower(0);
-        rightB.setPower(0);
-        rightF.setPower(0);
+        // Para os motores ao finalizar
+        leftF.setVelocity(0);
+        leftB.setVelocity(0);
+        rightF.setVelocity(0);
+        rightB.setVelocity(0);
     }
 
-    // Método para obter o ângulo atual (yaw) do IMU BHI260AP
+    // Método utilitário para obter o ângulo de giro (Yaw)
     private static double getHeading(IMU imu) {
         YawPitchRollAngles angles = imu.getRobotYawPitchRollAngles();
         return angles.getYaw(AngleUnit.DEGREES);

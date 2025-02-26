@@ -82,7 +82,7 @@ public class TeleOp_Mode extends OpMode{
         telemetry.update();
     }
 
-    //Método para mover o SLIDE
+    //TODO: Método para mover o SLIDE
     public void move_Slide(){
         int currentPosition = slide.getCurrentPosition(); // Obtém a posição atual do motor
         double joystickInput = gamepad2.left_stick_y; // Captura a entrant do joystick
@@ -108,7 +108,7 @@ public class TeleOp_Mode extends OpMode{
         }
 
     }
-    //Método para mover a base do Atuador
+    //TODO: Método para mover a base do Atuador
     public void move_Base(){
         int currentPosition2 = leftArm.getCurrentPosition();
         int currentPosition3 = rightArm.getCurrentPosition();
@@ -123,10 +123,6 @@ public class TeleOp_Mode extends OpMode{
 
         double powerM = maxPower + controller.getComputedOutput(leftArm.getCurrentPosition());
         double powerM1 = maxPower + controller.getComputedOutput(rightArm.getCurrentPosition());
-
-
-        //double powerS = maxPower - controller.getComputedOutput(leftArm.getCurrentPosition());
-       // double powerS1 = maxPower - controller.getComputedOutput(rightArm.getCurrentPosition());
 
 
         if(currentPosition2 < MAXLIMITL && currentPosition3 < MAXLIMITR) {
@@ -186,13 +182,11 @@ public class TeleOp_Mode extends OpMode{
             }
         }
 
-
-
         telemetry.addData("Posição LEFT: ", currentPosition2);
         telemetry.addData("Posição RIGHT: ", currentPosition3);
 
     }
-    //Método para mover o CHASSI do robô
+    //TODO: Método para mover o CHASSI do robô
     public void move_Chassi(){
         y = gamepad1.left_stick_y;
         x = -gamepad1.left_stick_x;
@@ -224,7 +218,7 @@ public class TeleOp_Mode extends OpMode{
         leftB.setPower(leftBPower);
 
     }
-    //Método para inicializar os hardwares
+    //TODO: Método para inicializar os hardwares
     public void initHard(){
 
         leftArm = hardwareMap.get(DcMotorEx.class, "left");
@@ -267,7 +261,7 @@ public class TeleOp_Mode extends OpMode{
         servo.setDirection(Servo.Direction.REVERSE);
 
     }
-    //Método para mover os Servos
+    //TODO: Método para mover os Servos
     public void move_Servo(){
 
         if(gamepad2.right_bumper){

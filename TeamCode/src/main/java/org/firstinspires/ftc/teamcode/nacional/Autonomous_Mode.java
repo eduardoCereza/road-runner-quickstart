@@ -97,14 +97,12 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
     }
 
-
     //TODO: VERIFICAR COMO FUNCIONAM OS SERVOS PARA ACERTAR OS MOVIMENTOS
     public class servos {
         private Servo garra, servoX, servoY;
         public servos(HardwareMap hardwareMap) {
-            garra = hardwareMap.get(Servo.class, "garra");
-            servoX = hardwareMap.get(Servo.class, "servoX");
-            servoY = hardwareMap.get(Servo.class, "servoY");
+            garra = hardwareMap.get(Servo.class, "servo");
+            servoY = hardwareMap.get(Servo.class, "servo3");
 
         }
         //ação de abrir garra
@@ -206,8 +204,6 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
         }
     }
 
-
-
     @Override
     public void runOpMode(){
         //inicializa o chassi em uma posição especifica
@@ -230,37 +226,14 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
         //TODO: A PARTIR DAQUI QUE È POSSÍVEL COLOCAR NOSSAS TRAJETÓRIAS
         //TODO: ESTUDAR OQUE CADA EXPRESSÂO SIGNIFICA EXEMPLO: LINETOYSPLINEHEADING
-        TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
-                .lineToYSplineHeading(33, Math.toRadians(0))
-                .waitSeconds(2)
-                .setTangent(Math.toRadians(90))
-                .lineToY(48)
-                .setTangent(Math.toRadians(0))
-                .lineToX(32)
-                .strafeTo(new Vector2d(44.5, 30))
-                .turn(Math.toRadians(180))
-                .lineToX(47.5)
-                .waitSeconds(3);
-        TrajectoryActionBuilder tab2 = drive.actionBuilder(initialPose)
-                .lineToY(37)
-                .setTangent(Math.toRadians(0))
-                .lineToX(18)
-                .waitSeconds(3)
-                .setTangent(Math.toRadians(0))
-                .lineToXSplineHeading(46, Math.toRadians(180))
-                .waitSeconds(3);
-        TrajectoryActionBuilder tab3 = drive.actionBuilder(initialPose)
-                .lineToYSplineHeading(33, Math.toRadians(180))
-                .waitSeconds(2)
-                .strafeTo(new Vector2d(46, 30))
-                .waitSeconds(3);
-        Action trajectory0 = drive.actionBuilder(new Pose2d(-0.66, -66.56, Math.toRadians(90.00)))
-                .splineTo(new Vector2d(-0.47, -39.33), Math.toRadians(89.60))
-                .build();
-        Action trajectoryActionCloseOut = tab1.endTrajectory().fresh()
-                .strafeTo(new Vector2d(48, 12))
-                .build();
+        TrajectoryActionBuilder trajectoryA = drive.actionBuilder(new Pose2d(0.0, 0.0, Math.toRadians(90.00)))
+                .lineToY(10);
 
+        TrajectoryActionBuilder trajectoryB = drive.actionBuilder(new Pose2d(0, 0, Math.toRadians(90.00)))
+                .lineToY(20);
+
+        TrajectoryActionBuilder trajectoryC = drive.actionBuilder(new Pose2d(0, 0, Math.toRadians(90.00)))
+                .lineToY(30);
 
         //ações que acontecem ao inicializar
         Actions.runBlocking(servos.GarraOpen());
@@ -279,17 +252,15 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
         Action trajectoryActionChosen;
         if (startPosition == 1) {
-            trajectoryActionChosen = tab1.build();
+            trajectoryActionChosen = trajectoryA.build();
         } else if (startPosition == 2) {
-            trajectoryActionChosen = tab2.build();
+            trajectoryActionChosen = trajectoryB.build();
         }else {
-            trajectoryActionChosen = tab3.build();
+            trajectoryActionChosen = trajectoryC.build();
         }
         Actions.runBlocking(
                 new SequentialAction(
-                        trajectoryActionChosen,
-                        servos.GarraOpen(),
-                        trajectoryActionCloseOut
+                        trajectoryActionChosen
                 )
         );
     }

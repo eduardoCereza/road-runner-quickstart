@@ -14,6 +14,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 
 // Non-RR imports
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -211,7 +212,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
         //Make sure your MecanumDrive is instantiated at the correct pose. If you end up using lineToX(), lineToY(),
         //strafeTo(), splineTo(), or any of their variants in your code, if the initial pose is wrong,
         // all future movements will be thrown off.
-        Pose2d initialPose = new Pose2d(11.8, 61.7,Math.toRadians(90));
+        Pose2d initialPose = new Pose2d(0, 0,Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         //cria uma instância para as o slide
@@ -226,14 +227,19 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
         //TODO: A PARTIR DAQUI QUE È POSSÍVEL COLOCAR NOSSAS TRAJETÓRIAS
         //TODO: ESTUDAR OQUE CADA EXPRESSÂO SIGNIFICA EXEMPLO: LINETOYSPLINEHEADING
-        TrajectoryActionBuilder trajectoryA = drive.actionBuilder(new Pose2d(0.0, 0.0, Math.toRadians(90.00)))
-                .lineToY(10);
+        TrajectoryActionBuilder trajectoryA = drive.actionBuilder(initialPose)
+                .lineToX(10);
+
 
         TrajectoryActionBuilder trajectoryB = drive.actionBuilder(new Pose2d(0, 0, Math.toRadians(90.00)))
                 .lineToY(20);
 
         TrajectoryActionBuilder trajectoryC = drive.actionBuilder(new Pose2d(0, 0, Math.toRadians(90.00)))
                 .lineToY(30);
+
+        TrajectoryActionBuilder trajectory0 = drive.actionBuilder(new Pose2d(-0.69, -67.66, Math.toRadians(90.00)))
+                .splineTo(new Vector2d(29.94, -46.17), Math.toRadians(35.05))
+                .splineTo(new Vector2d(48.69, -49.83), Math.toRadians(-11.04));
 
         //ações que acontecem ao inicializar
         Actions.runBlocking(servos.GarraOpen());
@@ -252,7 +258,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
         Action trajectoryActionChosen;
         if (startPosition == 1) {
-            trajectoryActionChosen = trajectoryA.build();
+            trajectoryActionChosen = trajectory0.build();
         } else if (startPosition == 2) {
             trajectoryActionChosen = trajectoryB.build();
         }else {
